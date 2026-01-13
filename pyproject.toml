@@ -2,8 +2,6 @@
 requires = ["setuptools", "setuptools_scm"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools_scm]
-
 [project]
 name = "bogus_py"
 description = "A Python package for data processing at the OGU, Bristol"
@@ -20,3 +18,9 @@ readme = "README.md"
 
 [project.urls]
 Homepage = "https://github.com/ogubristol/bogus_py"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.package.find]
+where = ["src"]
