@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "bogus_py"
 description = "A Python package for data processing at the OGU, Bristol"
-dynamic = ["version]
+dynamic = ["version"]
 dependencies = [
     "pandas>=2.0.0",
     "xlrd>=2.0.0"
