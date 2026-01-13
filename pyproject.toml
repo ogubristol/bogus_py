@@ -18,9 +18,3 @@ readme = "README.md"
 
 [project.urls]
 Homepage = "https://github.com/ogubristol/bogus_py"
-
-[tool.setuptools]
-package-dir = {"" = "src"}
-
-[tool.setuptools.package.find]
-where = ["src"]
