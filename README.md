@@ -22,7 +22,7 @@ We currently have data preparation functions for the following instrument files:
 - IsoPrime 100 (`.raw` folders; these are particularly annoying)
 
 Note that processing of `.dxf` files from the Delta instruments requires an extra
-step, see [below](##dxf-pre-processing).
+step, see [below](#dxf-pre-processing).
 
 ### Data analysis
 
