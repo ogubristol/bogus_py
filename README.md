@@ -1,16 +1,33 @@
-# IRMS data processing
+# bogus_py
 
 ## Overview
 
-These are Python tools developed by the Organic Geochemistry Unit to help
-process isotope ratio mass spectrometry (IRMS) data. Currently, this
-process has only been tested on IsoDat `.dxf` files from the Delta V 1,
-though we hope to expand the utility further.
+**Welcome to the Bristol Organic Geochemistry Unit System - Python (BOGUS Py for short).**
 
-The IRMS data must first be prepared into `.csv` files using the
-[isoreader](https://isoreader.isoverse.org/index.html) R package. No similar package for
-loading IRMS binary files
-yet exists in Python.
+This is a Python package developed by the Organic Geochemistry Unit to help
+process isotope ratio mass spectrometry (IRMS) data. This is done in two ways:
+
+### Data preparation
+
+Our IRMS instruments (particularly the IsoPrime 100) produce horrible proprietary
+data files, requiring each run to be opened and the data manually extracted before
+we can calculate &delta; values. With the data preparation functions in this package
+one should be able to create one long `.csv` or Excel file from a folder full of
+data files without any copy-pasting at all!
+
+We currently have data preparation functions for the following instrument files:
+
+- Delta V (`.dxf`)
+- Delta XP (`.dxf`)
+- IsoPrime 100 (`.raw` folders; these are particularly annoying)
+
+Note that processing of `.dxf` files from the Delta instruments requires an extra
+step, see [below](##dxf-preprocessing).
+
+### Data analysis
+
+Once &delta; values have been obtained, we also need to perform corrections like scale
+normalisation. We also have functions for that!
 
 ## Installation
 
@@ -24,9 +41,9 @@ pip install https://github.com/ogubristol/bogus_py.git
 To submit modifications/additions, please branch and create a merge request. For help
 with this, contact Nick Hall.
 
-## Pre-processing
+## DXF Pre-processing
 
-Currently, this package cannot directly handle output files from IRMS software
+Currently, this package cannot directly handle output files from Thermo IRMS software
 (e.g. `.dxf` files).
 Handily, the [isoreader](https://isoreader.isoverse.org/index.html) R package has been
 developed to handle these files, and can export useful data as easy-to-read `.csv`
