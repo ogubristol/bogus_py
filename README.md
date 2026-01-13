@@ -18,7 +18,7 @@ This package can be installed into a Python environment with `pip`, using
 the following command:
 
 ```bash
-pip install git+https://github.com/nicksgoodusername/ogu-data-processing.git
+pip install https://github.com/ogubristol/bogus_py.git
 ```
 
 To submit modifications/additions, please branch and create a merge request. For help
