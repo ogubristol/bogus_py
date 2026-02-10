@@ -150,19 +150,25 @@ def regression_analysis(group: pd.DataFrame) -> pd.Series:
 
 
 def reference_scale_normalisation(ref_meas: pd.DataFrame,
-                                  ref_info: dict = schimm_F8_lookup
+                                  ref_info: dict,
                                   ) -> pd.DataFrame:
     """
-    Calculate scale normalisation parameters (gradient, intercept, RMS error) for each reference material run
-    in a dataframe. The parameters are of the form
+    ## Overview
+    Calculate scale normalisation parameters (gradient, intercept, RMS error) for each set of reference material
+    data in a dataframe. The parameters are of the form
 
         deltaMeas = *m* · deltaTrue + *c*
 
     Where deltaMeas is the measured delta value of a given peak, deltaTrue is the "true" (scale corrected)
     value and *m* and *c* are the gradient and intercept of the least squares regression line respectively.
 
+    ## Warning
+    Please ensure that the `ref_meas` dataframe contains only reference material peaks, not sacrificial standards,
+    reference gases, contamination etc. Try filtering by retention time and peak height.
+
     :param ref_meas: A long-format dataframe of reference material peak data
-    :param ref_info: A dictionary of peak_number: known_delta_value pairs for the reference material
+    :param ref_info: A dictionary of `peak_no: known_delta_value` pairs for the reference material. The `peak_no`
+    of the first compound to elute should be 1 and the `known_delta_value` should match the peak index.
     :return: A per-run dataframe containing IDs and scale normalisation parameters for each reference material
     injection
     """
@@ -171,9 +177,12 @@ def reference_scale_normalisation(ref_meas: pd.DataFrame,
     if "peak_no" not in ref_meas.columns:
         raise ValueError("Required column(s) not found. Please apply a processing function.")
 
+    df_ref = ref_meas.copy()
+    df_ref["peak_index"] = df_ref.groupby("run_id")["peak_no"].rank(method="dense")
+
     # Select only the reference peaks, add a column with the known peak values
-    df_ref = ref_meas\
-        .loc[ref_meas["peak_no"].isin(ref_info.keys())]\
+    df_ref = df_ref\
+        .loc[df_ref["peak_index"].isin(ref_info.keys())]\
         .assign(delta_known=lambda d: d["peak_no"].map(ref_info))\
         .copy()
 
@@ -219,6 +228,10 @@ def normalise_sample_peak_data(sample_peak_data: pd.DataFrame,
             ) <= ret_t_tolerance).any(axis=1)
     ]
 
+    # Round selected retention times to expected values for easy statistics
+    merged_data["approx_RT"] = merged_data["Rt"].apply(
+        lambda x: int([t for t in peak_ret_ts if abs(x - t) <= ret_t_tolerance][0]))
+
     # Calculate the mean correction coefficients from the bracketing reference material runs
     for coeff in ("gradient", "intercept"):
         merged_data[f"mean_{coeff}"] = merged_data[[f"forward_ref_{coeff}",
@@ -231,23 +244,17 @@ def normalise_sample_peak_data(sample_peak_data: pd.DataFrame,
     return merged_data
 
 
-def triplicate_analysis(normalised_data: pd.DataFrame,
-                        peak_ret_ts: list,
-                        ret_t_tolerance: int = 5) -> pd.DataFrame:
+def triplicate_analysis(normalised_data: pd.DataFrame) -> pd.DataFrame:
     """
-    Take long-format normalised peak data and extract the mean and StdDev for each set of triplicates
+    Take normalised peak data and calculate the mean and StdDev of delta values
+    per peak for each set of triplicates
 
     :param normalised_data: Output from `normalise_sample_peak_data`
-    :param peak_ret_ts: Expected retention times of peaks of interest (e.g. C16, C18) in seconds
-    :param ret_t_tolerance: Tolerance for variation in peak retention times in seconds
     :return: Dataframe containing summary delta value data for each sample
     """
 
     df = normalised_data.copy()
     df["sample_id_short"] = df["sample_id"].str[:-1]  # Remove repeat suffix to allow grouping by sample
-    df["approx_RT"] = df["Rt"].apply(  # Round retention times to expected values if within tolerance
-        lambda x: int([t for t in peak_ret_ts if abs(x - t) <= ret_t_tolerance][0])
-    )
 
     index_cols = ["sample_id_short",
                   "approx_RT",
