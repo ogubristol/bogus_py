@@ -183,7 +183,7 @@ def reference_scale_normalisation(ref_meas: pd.DataFrame,
     # Select only the reference peaks, add a column with the known peak values
     df_ref = df_ref\
         .loc[df_ref["peak_index"].isin(ref_info.keys())]\
-        .assign(delta_known=lambda d: d["peak_no"].map(ref_info))\
+        .assign(delta_known=lambda d: d["peak_index"].map(ref_info))\
         .copy()
 
     # Perform regression analysis on each run
