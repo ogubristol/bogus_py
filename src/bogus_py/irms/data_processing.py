@@ -167,8 +167,8 @@ def reference_scale_normalisation(ref_meas: pd.DataFrame,
     reference gases, contamination etc. Try filtering by retention time and peak height.
 
     :param ref_meas: A long-format dataframe of reference material peak data
-    :param ref_info: A dictionary of `peak_no: known_delta_value` pairs for the reference material. The `peak_no`
-    of the first compound to elute should be 1 and the `known_delta_value` should match the peak index.
+    :param ref_info: A dictionary of `peak_index: known_delta_value` pairs for the reference material. The `peak_index`
+    of the first reference compound to elute should be 1 and the `known_delta_value` should match the peak index.
     :return: A per-run dataframe containing IDs and scale normalisation parameters for each reference material
     injection
     """
