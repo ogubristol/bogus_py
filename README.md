@@ -35,7 +35,7 @@ This package can be installed into a Python environment with `pip`, using
 the following command:
 
 ```bash
-pip install https://github.com/ogubristol/bogus_py.git
+pip install git+https://github.com/ogubristol/bogus_py.git
 ```
 
 To submit modifications/additions, please branch and create a merge request. For help
