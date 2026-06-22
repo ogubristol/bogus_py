@@ -8,13 +8,21 @@ schimm_F8_deltas = [-231.2, -231.2, -166.8, -211, -206.2, -214.2, -166.7, -195.5
 schimm_F8_peaks = [x for x in range(7, 15)]
 schimm_F8_lookup = dict(zip(schimm_F8_peaks, schimm_F8_deltas))
 
+delta_col_names = {
+    "H": "d 2H/1H",
+    "C": "d 13C/12C",
+    "N": "d 15N/14N"
+}
 
-def process_2H_vendor_data(exported_data: pd.DataFrame) -> pd.DataFrame:
+
+def process_delta_vendor_data(exported_data: pd.DataFrame,
+                              isotope: str = "H") -> pd.DataFrame:
     """
-    Standardise the columns of a dataframe obtained from processing Delta V hydrogen isotope ratio
+    Standardise the columns of a dataframe obtained from processing Delta V / Delta XP isotope ratio
     `.dxf` files. For information on how to produce this dataframe, see the repository README.
 
     :param exported_data: A dataframe containing data as exported from hydrogen isotope isodat files
+    :param isotope: A string (`"H"`, `"C"`, or `"N"`) specifying the isotope being measured
     :return: The dataframe with added/renamed columns
     """
 
@@ -23,7 +31,10 @@ def process_2H_vendor_data(exported_data: pd.DataFrame) -> pd.DataFrame:
     df["run_id"] = df["Identifier 1"]
     df["run_id_no"] = df["run_id"].str.extract(r"(\d+)").astype(int)
     df["sample_id"] = df["Identifier 2"]
-    df["delta_meas"] = df["d 2H/1H"]
+    if delta_col_names[isotope] in df.columns:
+        df["delta_meas"] = df[delta_col_names[isotope]]
+    else:
+        raise ValueError("Specified isotope does not match the input data file. Please try again.")
 
     return df
 
